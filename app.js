@@ -2,15 +2,31 @@ const express = require('express');
 const app = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const productRoutes = require('./api/routes/products');
 const ordersRoutes = require('./api/routes/orders');
+const nodemon = require('nodemon');
+
+// mongoose setup database connection
+const db = `mongodb+srv://${process.env.MONGO_ATLAS_USERNAME}:${process.env.MONGO_ATLAS_PW}@cluster0.jml2mwa.mongodb.net/?retryWrites=true&w=majority;`
+mongoose.connect(db, {
+    // Set the write concern without the semicolon
+    w: 'majority',
+    wtimeoutMS: 0,
+}).then(() => {
+    console.log('Connected to MongoDB Atlas');
+}).catch((err) => {
+    console.log('Error: ', err.message);
+});
+
 
 // logging requests
 app.use(morgan('dev'));
 
 // parsing body of incoming requests
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // CORS handling
